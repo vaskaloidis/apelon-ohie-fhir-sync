@@ -1,0 +1,25 @@
+{
+    "name": "ihris/fhir-sync",
+    "description": "Syncyhronize DTS FHIR Value Sets",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Vas Kaloidis",
+            "email": "vas.kaloidis@gmail.com"
+        }
+    ],
+    
+    "require": {
+        "php": ">=5.5.9",
+        "monolog/monolog": "1.17.1",
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    
+    "autoload": {
+        "psr-4": {
+            "Apelon\\Sync\\": "lib/sync",
+            "Apelon\\Object\\": "lib/object",
+            "Apelon\\Config\\": "etc/"
+        }
+    }
+}

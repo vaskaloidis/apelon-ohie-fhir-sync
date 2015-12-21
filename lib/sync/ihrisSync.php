@@ -397,11 +397,11 @@ class ihrisSync {
                     . ") "
                 . " VALUES ("
                 	. "'" . $this->nextid('county|', 'hippo_county') . "', "
-                    . "'NULL', "
+                    . "NULL, "
                     . "NOW(), "
                     . "NOW(), "
                     . "'0', "
-                    . "'NULL', "
+                    . "NULL, "
                    . "'" . mysqli_real_escape_string($this->conn, $district) . "', "
                     . "'" . mysqli_real_escape_string($this->conn, $this->getDistrictName($district) . ' - ' . $name) . "') ";
     	    	
@@ -465,8 +465,8 @@ class ihrisSync {
                     . "`name` "
                     . ") "
                 . " VALUES ("
-                	. "'" . $this->nextid('facility|', 'hippo_facility_type') . "', "
-                    . "'NULL', "
+                	. "'" . $this->nextid('facility_type|', 'hippo_facility_type') . "', "
+                    . "NULL, "
                     . "NOW(), "
                     . "'0', "
                     . "'" . mysqli_real_escape_string($this->conn, $name) . "') ";
@@ -539,7 +539,7 @@ class ihrisSync {
     		}
     	}
     }
-    private function insertPositionQuery($id, $name) {
+    private function insertPositionQuery($name) {
     	$sql = "INSERT INTO "
                 . "`ihris_manage`.`hippo_position_type` "
                     . "(`id`, "
@@ -549,8 +549,8 @@ class ihrisSync {
                     . "`name` "
                     . ") "
                 . " VALUES ("
-                	. "'" . $this->nextid('position|', 'hippo_position_type') . "', "
-                    . "'NULL', "
+                	. "'" . $this->nextid('position_type|', 'hippo_position_type') . "', "
+                    . "NULL, "
                     . "NOW(), "
                     . "'0', "
                     . "'" . mysqli_real_escape_string($this->conn, $name) . "') ";
@@ -580,7 +580,7 @@ class ihrisSync {
         for ($x = 0; $x < $size; $x++) {
 			$f = $fhirData[$x];
             echo "Position Inserted: " . $f->display['value'] . " - " .  $f->code['value'] . "<br>";
-            $this->insertPositionQuery($x, $f->display['value']);
+            $this->insertPositionQuery($f->display['value']);
         }
     }
     

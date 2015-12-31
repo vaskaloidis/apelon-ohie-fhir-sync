@@ -122,12 +122,11 @@ iHRIS data and the recommended FHIR value-set:
  - Region (These are not value-sets, these have been hard-coded: North, East, South, West)
  - County (UsStatesNorth, UsStatesEast, UsStatesSouth, UsStatesWest)
  - District
-``
+```
 
 Format: insertTable(Value-Set-Name) and dropTableName()
 Geography Sync
 ```
-$ihris_manager->dropCountry();
 $ihris_manager->insertCountry("Valueset-Name");
 $ihris-manage->insertRegions("North/East/South/West", "Country|#id");
 $ihris_manage->insertDistricts("Valueset-Name", "Region|#id");
@@ -159,6 +158,4 @@ $regions = $ihris_manager->fetchRegions();
 $districts = $ihris_manager->fetchDistricts();
 $counties = $ihris_manager->fetchCounties();
 ```
-
-### Resource Map FHIR Sync Library
 

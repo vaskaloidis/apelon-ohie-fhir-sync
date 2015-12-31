@@ -5,6 +5,10 @@ namespace Apelon\Config;
 use Apelon\Object\rmFacilityTypeConfig;
 require __DIR__ . '/../vendor/autoload.php';
 
+$apelon_sync_users = array(
+	"vas" => "b09ca716f24a18d5217663ebea8930e4"
+	);
+
 //MYSQL AUTH
 $mysql_server = 'localhost';
 $mysql_user = 'ihris_manage';
@@ -40,11 +44,11 @@ $bali_config->setCollectionId("1667");
 $bali_config->setLayerId("1669");
 $bali_config->setLayerName("Medical Facility Information");
 $bali_config->setLayerOrder("2");
-$bali_config->setDefaultValuesetName("valueset-c80-facilitycodes");
+$bali_config->setDefaultValuesetName($fhir_facility_type_valueset);
 $bali_config->setFieldName("Facility Type");
 $bali_config->setFieldCode("facility_type");
 $bali_config->setFieldOrder("1");
-$bali_config->setFieldId("14194");
+$bali_config->setFieldId("14371");
 $bali_config->setNextId("2");
 
 $manilla_config = new rmFacilityTypeConfig();

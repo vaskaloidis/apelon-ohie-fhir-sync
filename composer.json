@@ -12,14 +12,16 @@
     "require": {
         "php": ">=5.5.9",
         "monolog/monolog": "1.17.1",
-        "guzzlehttp/guzzle": "~6.0"
+        "guzzlehttp/guzzle": "~6.0",
+        "restler/framework": "^3.0"
     },
     
     "autoload": {
         "psr-4": {
             "Apelon\\Sync\\": "lib/sync",
             "Apelon\\Object\\": "lib/object",
-            "Apelon\\Config\\": "etc/"
+            "Apelon\\Config\\": "etc/",
+            "Apelon\\Util\\": "lib/util"
         }
     }
 }

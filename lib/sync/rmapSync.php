@@ -12,7 +12,7 @@ class rmapSync {
 	private $conn, $dtsServer, $dtsUser, $dtsPassword, $rmapServer, $rmapUser, $rmapPassword, $payload, $collectionsUrl;
 	private $rc, $error;
 	
-	
+	 
 	public function getError() {
 	    return $this->error;
 	}
@@ -57,17 +57,14 @@ class rmapSync {
 	   }
 		$url = $this->rmapServer . $this->rc->getCollectionId() . "/layers/" . $this->rc->getLayerId() . ".json";
 		$collectionsUrl = $this->rmapServer . 'collections/' . $this->rc->getCollectionId() . '/layers.json';
-		
 		try {
-		    $payload = $this->buildPayload();
-		    
     		$guzzle = new Client(); 
-    		$request = $guzzle->request('PUT', $url, [
-    				'content-type' => 'application/json',
+    		$response = $guzzle->request('PUT', $url, [
+    				'json' => $this->buildPayload(),
     				'auth' => [$this->rmapUser, $this->rmapPassword]
-    		],array());
-    		$request->setBody($payload);
-    		$response = $request->send();
+    		]);
+
+    		echo "RESPONSE: " . $response->getStatusCode();
     		return true;
 		} catch(Exception $e) {
 		    $this->e = $e->getMessage();
@@ -81,34 +78,7 @@ class rmapSync {
 		$this->payload .= $command . PHP_EOL;
 	}
 	
-	
-	public function buildPayload() {
-        $options =$this->buildOptions($this->rc->getValuesetName());
-		
-		$json = array(
-			'layer' => array(
-				'id' => $this->rc->getLayerId(),
-				'name' => $this->rc->getLayerName(), //Change to Dynamic
-				'ord' => 2, //Change to Dynamic
-				'fields_attributes' => array(
-				   '0' => array(
-				        'id' => $this->rc->getFieldName(),
-				        'name' => $this->rc->getLayerName(),
-				        'code' => $this->rc->getFieldCode(),
-				        'kind' => 'select_one',
-				        'ord' => $this->rc->getFieldOrder(),
-				        'layer_id' => $this->rc->getLayerId(),
-				        'config' => array(
-				            'options' => $options
-				        )
-				    )
-				)
-			)
-		);
-		echo json_encode($json, JSON_FORCE_OBJECT);
-		return $json;
-	}
-		
+
 	public function buildOptions($valueset) {
         $fhirData = $this->getFhirData($valueset)->expansion->contains;
         if(!$fhirData) {
@@ -122,55 +92,102 @@ class rmapSync {
             $f = $fhirData[$x];
             $name_data = $f->display['value']; $name = $name_data[0];
             $code_data = $f->code['value']; $code = $code_data[0];
-            $return[] = array(
+            $thisArray = array(
                 'id' => strval($option_id),
                 'code' => strval($code),
                 'label' => strval($name)
                 );
+            if(size($thisArray)>0){
+            	array_push($return, $thisArray);
+            }
             $option_id++;
         }
         return $return;
 	}
 	
-	public function buildPayload3($layerId, $valueSet, $layerName, $optionName, $NEXT_ID = 2) {
-		$optName2 = strtolower($optionName);
-		$explode = explode(" ", $optName2); 
-		$optionName2 = $explode[0] . "_" . $explode[1];
+	public function buildPayload() {
+		$json = array(
+			'layer' => array(
+				'id' => $this->rc->getLayerId(),
+				'name' => $this->rc->getLayerName(), //Change to Dynamic
+				'ord' => 2, //Change to Dynamic
+				'fields_attributes' => array(
+				   '0' => array(
+				        'id' => $this->rc->getFieldId(),
+				        'name' => $this->rc->getLayerName(),
+				        'code' => $this->rc->getFieldCode(),
+				        'kind' => 'select_one',
+				        'ord' => $this->rc->getFieldOrder(),
+				        'layer_id' => $this->rc->getLayerId(),
+				        'config' => array(
+				            'options' => $this->buildOptions($this->rc->getValuesetName())
+				        )
+				    )
+				)
+			)
+		);
+
+		//TODO:
+		$config = array();
+		$fields_attributes() = array();
+		$layer = array();
+		$json = array();
+
+		$config['options'] = $this->buildOptions($this->rc->getValuesetName())
+		$field_0 = array(
+				        'id' => $this->rc->getFieldId(),
+				        'name' => $this->rc->getLayerName(),
+				        'code' => $this->rc->getFieldCode(),
+				        'kind' => 'select_one',
+				        'ord' => $this->rc->getFieldOrder(),
+				        'layer_id' => $this->rc->getLayerId(),
+				        'config' => $config
+				    );
+		$fields
+		$fields_attributes['0'] = $field_0;
+		$layer
+
+
+
+		echo json_encode($json, JSON_FORCE_OBJECT);
+		return $json;
+	}
+	
+	public function buildPayload_MANUAL() {
 		$this->addLine("{");
 			$this->addLine("\"layer\":{");
-			$this->addLine("\"id\":\"" . $layerId . "\",");
-			$this->addLine("\"name\":\"" . $layerName . "\",");
-			$this->addLine("\"ord\":\"2\",");
-			$this->addLine("\"fields_attributes\":{");
-				$this->addLine("\"0\":{ ");
-					$this->addLine("\"id\":\"13377\",");
-					$this->addLine("\"name\":\"" . $optionName . "\",");
-					$this->addLine("\"code\":\"" . $optionName2 . "\",");
-					$this->addLine("\"kind\":\"select_one\",");
-					$this->addLine("\"ord\":\"1\",");
-					$this->addLine("\"layer_id\":\"" . $layerId . "\",");
-					$this->addLine("\"config\":{");
-						$this->addLine("\"options\":[");
-							//$NEXT_ID = 81; //NEXT_ID //TODO: THIS NEEDS TO BE RETREIVED DYNAMICALLY FROM API
-							$count = 0;
-							$fhirData = $this->getFhirData($valueSet)->expansion->contains;
-							if(!$fhirData) { return false; }
-							$size = iterator_count($fhirData);
-							for ($x = 0; $x < $size; $x++) {
-								$row = $fhirData[$x];
-								$this->addLine("{ ");
-									$this->addLine("\"id\":\"" . $NEXT_ID . "\",");
-									$this->addLine("\"code\":\"" . $row->display['value'] . "\",");
-									$this->addLine("\"label\":\"" . $row->code['value'] . "\"");
-								$this->addLine("}");
-								//addLine(count + " / " + facilitiesData.size());
-								if($count != ($size-1)) {
-									$this->addLine(",");
-								}
-								$count++; $NEXT_ID++;
-							}
-						
-						$this->addLine("]");
+				$this->addLine("\"id\":\"" . $this->rc->getLayerId() . "\",");
+				$this->addLine("\"name\":\"" . $this->rc->getLayerName() . "\",");
+				$this->addLine("\"ord\":\"2\",");
+					$this->addLine("\"fields_attributes\":{");
+						$this->addLine("\"0\":{ ");
+							$this->addLine("\"id\":\"" . $this->rc->getFieldName() . "\",");
+							$this->addLine("\"name\":\"" . $this->rc->getlayerName() . "\",");
+							$this->addLine("\"code\":\"" .$this->rc->getFieldCode() . "\",");
+							$this->addLine("\"kind\":\"select_one\",");
+							$this->addLine("\"ord\":\"" . $this->rc->getFieldOrder() . "\",");
+							$this->addLine("\"layer_id\":\"" . $this->rc->getLayerId() . "\",");
+							$this->addLine("\"config\":{");
+								$this->addLine("\"options\":[");
+									$count = 0;
+									$fhirData = $this->getFhirData($this->rc->getValuesetName())->expansion->contains;
+									if(!$fhirData) { return false; }
+									$size = iterator_count($fhirData);
+									$NEXT_ID = $this->rc->getNextId();
+									for ($x = 0; $x < $size; $x++) {
+										$row = $fhirData[$x];
+										$this->addLine("{ ");
+											$this->addLine("\"id\":\"" . $NEXT_ID . "\",");
+											$this->addLine("\"code\":\"" . $row->display['value'] . "\",");
+											$this->addLine("\"label\":\"" . $row->code['value'] . "\"");
+										$this->addLine("}");
+										//addLine(count + " / " + facilitiesData.size());
+										if($count != ($size-1)) {
+											$this->addLine(",");
+										}
+										$count++; $NEXT_ID++;
+									}
+							$this->addLine("]");
 					$this->addLine("}");
 				$this->addLine("}");
 			$this->addLine("}");
